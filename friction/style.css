@@ -29,7 +29,7 @@ body{
     flex-direction:column;
     line-height:0px;
     transform:translateX(500px);
-    animation:container-transform 50s cubic-bezier(0.8,0,0.2,1);
+    animation:container-transform 40s cubic-bezier(0.8,0,0.2,1);
 }
 
 @keyframes container-transform{

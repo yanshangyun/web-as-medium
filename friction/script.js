@@ -44,6 +44,10 @@ function vortex(){
         box.style.transitionDuration = `${animationDuration}s`;
         box.style.transitionTimingFunction = 'cubic-bezier(0.8,0,0.2,1)';
     
+        boxContainer.style.transitionProperty = 'transform';
+        boxContainer.style.transitionDuration = `${animationDuration}s`;
+        boxContainer.style.transitionTimingFunction = 'cubic-bezier(0.8,0,0.2,1)';
+    
         // 100%
         box.style.transitionDelay = '5s';
         box.style.transform = `rotate(${i * degree - randomDegreeOffset + individualRotation}deg) skew(${randomSkew}deg, ${randomSkew}deg) scale(${randomScale})`;
