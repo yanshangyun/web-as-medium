@@ -12,7 +12,7 @@ const words = ["probably loves", "doesn't love", "sometimes loves", "usually lov
 
 const loveElements = 500;
 
-const animationDuration = 40;
+const animationDuration = 30;
 
 function vortex(){
     for (let i = 0; i < loveElements; i++) {
@@ -36,6 +36,8 @@ function vortex(){
         box.style.filter = 'blur(0px)';
         box.style.lineHeight = '20px';
         boxContainer.style.transform = `translateX(0px)`;
+
+        container.style.transform = 'translateX(0px)';
     
         void box.offsetWidth;
     
@@ -47,13 +49,17 @@ function vortex(){
         boxContainer.style.transitionProperty = 'transform';
         boxContainer.style.transitionDuration = `${animationDuration}s`;
         boxContainer.style.transitionTimingFunction = 'cubic-bezier(0.8,0,0.2,1)';
+
+        container.style.transitionProperty = 'transform';
+        container.style.transitionDuration = `${animationDuration}s`;
+        container.style.transitionTimingFunction = 'cubic-bezier(0.8,0,0.2,1)';
     
         // 100%
-        box.style.transitionDelay = '5s';
         box.style.transform = `rotate(${i * degree - randomDegreeOffset + individualRotation}deg) skew(${randomSkew}deg, ${randomSkew}deg) scale(${randomScale})`;
         // box.style.transform = `rotate(${i * degree - randomDegreeOffset + individualRotation}deg) skew(${randomSkew}deg, ${randomSkew}deg)`;
         box.style.filter = `blur(${randomBlur}px)`;
         //boxContainer.style.transform = `scale(${randomScale}`;
+        container.style.transform = 'translateX(1000px)';
     }
 
     function updateBoxContent() {
