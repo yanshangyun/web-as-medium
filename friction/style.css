@@ -1,5 +1,11 @@
-.body{
-    overflow-x:hidden;
+/* @font-face {
+    font-family:pantasia;
+    src: url(/friction/pantasia.otf);
+} */
+
+body{
+    /* font-family:pantasia; */
+    font-family:'Times New Roman', Times, serif;
 }
 
 #center{
@@ -17,7 +23,7 @@
 #container{
 	display:none;
     flex-direction:column;
-    animation: container-margin 50s cubic-bezier(0.8,0,0.2,1), container-line 10s cubic-bezier(0.8,0,0.2,1);
+    animation: container-margin 50s cubic-bezier(0.8,0,0.2,1);
     margin-left:10%;
     margin-right:10%;
     line-height:0px;
@@ -31,15 +37,6 @@
     to{
         margin-left:10%;
         margin-right:10%;
-    }
-}
-
-@keyframes container-line{
-    from{
-        line-height:0px;
-    }
-    to{
-        line-height:10px;
     }
 }
 
