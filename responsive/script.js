@@ -71,8 +71,6 @@ function windowSize(){
         textBlue.innerHTML ="LISTEN CLOSELY";
     }
 
-    
-
     if(width > 1000){
         textBlue.innerHTML =`WHAT<br>DID<br>YOU<br>JUST<br>TELL ME?`;
     }
