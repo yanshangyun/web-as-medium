@@ -20,23 +20,24 @@ body{
     color:black;
 }
 
+#answer{
+    opacity:0%;
+}
+
 #container{
 	display:none;
     flex-direction:column;
-    animation: container-margin 50s cubic-bezier(0.8,0,0.2,1);
-    margin-left:10%;
-    margin-right:10%;
     line-height:0px;
+    transform:translateX(500px);
+    animation:container-transform 30s cubic-bezier(0.8,0,0.2,1);
 }
 
-@keyframes container-margin{
+@keyframes container-transform{
     from{
-        margin-left:0%;
-        margin-right:0%
+        transform:translateX(0px);
     }
     to{
-        margin-left:10%;
-        margin-right:10%;
+        transform:translateX(500px);
     }
 }
 

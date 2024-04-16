@@ -1,6 +1,7 @@
 const inputField = document.getElementById('firstName');
 const nameCenter = document.getElementById('nameCenter');
 const centerDiv = document.getElementById('center');
+const answer = document.getElementById('answer');
 const container = document.getElementById('container');
 const header = document.getElementById('header');
 const width = window.innerWidth;
@@ -11,7 +12,7 @@ const words = ["probably loves", "doesn't love", "sometimes loves", "usually lov
 
 const loveElements = 500;
 
-const animationDuration = 20;
+const animationDuration = 40;
 
 function vortex(){
     for (let i = 0; i < loveElements; i++) {
@@ -42,10 +43,6 @@ function vortex(){
         box.style.transitionProperty = 'transform, filter';
         box.style.transitionDuration = `${animationDuration}s`;
         box.style.transitionTimingFunction = 'cubic-bezier(0.8,0,0.2,1)';
-    
-        boxContainer.style.transitionProperty = 'transform';
-        boxContainer.style.transitionDuration = `${animationDuration}s`;
-        boxContainer.style.transitionTimingFunction = 'cubic-bezier(0.8,0,0.2,1)';
     
         // 100%
         box.style.transitionDelay = '5s';
@@ -92,6 +89,8 @@ function fadeOutAllExceptOne() {
         if (i !== indexToKeep) {
             box.style.transition = 'opacity 5s';
             box.style.opacity = 0;
+            answer.style.transition = 'opacity 5s';
+            answer.style.opacity = '100%';
             setTimeout(() => box.remove(), animationDuration * 1000);
         }
     });
