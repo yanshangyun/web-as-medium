@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <title>holding hands</title>
+    <style>
+        @font-face {
+            font-family: pantasia;
+            src: url(pantasia.otf);
+        }
+
+        body{
+            font-family:'Times New Roman', Times, serif;
+            font-size:15px;
+        }
+
+        button{
+            font-family:'Times New Roman', Times, serif;
+            background-color:white;
+            border:dashed black 0.5px;
+            border-radius:100px;
+            padding-left:10px;
+            padding-right:10px;
+            margin-bottom:5px;
+        }
+
+        button:hover{
+            background-color:black;
+            color:white;
+        }
+
+        .cell {
+            width:10px;
+            height:15px;
+            display:inline-block;
+            /* border:black 0.5px solid; */
+            padding-left:2px;
+            padding-right:2px;
+            background-color:transparent;
+            overflow:hidden;
+        }
+
+        .player1{
+            background-color:rgb(133, 182, 255);
+        }
+
+        .player2{
+            background-color:rgb(255, 120, 185);
+        }
+
+        .player1, .player2 {
+            animation: cursorBlink 1s infinite steps(1);
+        }
+
+        @keyframes cursorBlink {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .revealed{
+            color:black;
+        }
+
+        .center-wrapper{
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .game-container{
+            background-color:rgb(255, 255, 255);
+            width:700px;
+            height:760px;
+            overflow:hidden;
+            border:black 0.5px solid;
+            align-content: center;
+            font-family:pantasia;
+            box-shadow:0px 0px 10px rgb(198, 198, 198);
+            margin-top:50px;
+            margin-bottom:50px;
+        }
+        
+        .grid-wrapper{
+            width:800px;
+        }
+
+        .info-wrapper{
+            display:flex;
+            flex-direction:column;
+            z-index:99;
+            border:black dashed 0.5px;
+            padding:10px;
+        }
+
+        .controls{
+            flex-direction:column;
+            margin-bottom:20px;
+            text-align:center;
+            line-height:10px;
+        }
+
+        .buttons-wrapper{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+
+        .distance-wrapper{
+            text-align:center;
+            line-height:5px;
+            margin-bottom:50px;
+        }
+
+        #you{
+            color:rgb(133, 182, 255);
+        }
+
+        #me{
+            color:rgb(255, 120, 185);
+        }
+
+        hr{
+            color:black;
+        }
+
+        .popup{
+            position:fixed;
+            background-color:white;
+            top:40%;
+            left:50%;
+            transform: translate(-50%, -50%);
+            z-index:1000;
+            border:black solid 0.5px;
+            padding:20px;
+            height:800px;
+            width:800px;
+            text-align:left;
+            box-shadow:0px 0px 10px rgb(198, 198, 198);
+            white-space:pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- <div class = "popup">
+        <p>this game requires two players.</p>
+    </div> -->
+    <div class="center-wrapper">
+        <div class="distance-wrapper">
+            <p>a garden for</p>
+            <p><span id="you"></span><span id="distance"></span><span id="me"></span></p>
+        </div>
+        <div class="game-container" id="game">
+            <div class="grid-wrapper">
+                <div id="grid"></div>
+            </div>
+        </div>
+        <div class="info-wrapper">
+            <div class="controls">
+                <p>flowers are best viewed together</p>
+                <p><span style="color:rgb(133, 182, 255)">you</span> can walk to me with <span style="color:rgb(133, 182, 255)">WASD</span> and <span style="color:rgb(255, 120, 185)">i</span> will reach you with <span style="color:rgb(255, 120, 185)">↑←↓→</span></p>
+            </div>
+            <div class="buttons-wrapper">
+                <button id="refreshButton"><span>walk through a new garden</span></button>
+                <button id="screenshotButton"><span>take a picture</span></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // grid size
+        const totalRows = 40;
+        const totalCols = 50;
+
+        // player positions
+        let player1Row = 0; // start top left
+        let player1Col = 0;
+        let player2Row = totalRows - 1; // start bottom right
+        let player2Col = totalCols - 1;
+
+        // grid
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            for (let i = 0; i < totalRows; i++) {
+                for (let j = 0; j < totalCols; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    grid.appendChild(cell);
+                }
+            grid.appendChild(document.createElement('br'));
+            }
+        }
+
+        // texts and corresponding indices
+        const text1 = "┈•·̇˚｡˚¸.`¨`•.¸。•₊°。°.·:¨¨｡･･ﾟ,｡･:･ﾟ·˚·°·°·˚˳.ꓸ·ֺֹ᛫⋅∙ᐧᱹᐤ。";
+        let nextLetterIndex1 = 0;
+
+        const text2 = "┈•·̇˚｡˚¸.`¨`•.¸。•₊°。°.·:¨¨｡･･ﾟ,｡･:･ﾟ·˚·°·°·˚˳.ꓸ·ֺֹ᛫⋅∙ᐧᱹᐤ。";
+        let nextLetterIndex2 = 0;
+
+        const text3 = "✭✶✷✵✺❤⚘⚛⚜☆✽✾✿❀❁❃❊❋✣✤✯＊☆";
+
+        // grid to store the trail symbols
+        const trailGrid = Array.from({ length: totalRows }, () => Array(totalCols).fill(' '));
+
+        // array to track the text displayed in each cell
+        const displayedText = Array.from({ length: totalRows }, () => Array(totalCols).fill(''));
+
+        // reveal
+        function updateGrid() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / totalCols);
+                const col = index % totalCols;
+
+                // update the trail grid
+                if (player1Row === row && player1Col === col) {
+                    trailGrid[row][col] = '1'; // player 1
+                } else if (player2Row === row && player2Col === col) {
+                    trailGrid[row][col] = '2'; // player 2
+                }
+
+                // check overlap
+                const isOverlapping = trailGrid[row][col] === '1' && trailGrid[row][col] === '2';
+
+                // check distance
+                function distance(row1, col1, row2, col2) {
+                    return Math.abs(row1 - row2) + Math.abs(col1 - col2);
+                }
+
+                // random color
+                function randomColor() {
+                    const redRange = { min: 100, max: 255 };
+                    const greenRange = { min: 100, max: 255 };
+                    const blueRange = { min: 100, max: 255 };
+
+                    const randomRed = Math.floor(Math.random() * (redRange.max - redRange.min + 1)) + redRange.min;
+                    const randomGreen = Math.floor(Math.random() * (greenRange.max - greenRange.min + 1)) + greenRange.min;
+                    const randomBlue = Math.floor(Math.random() * (blueRange.max - blueRange.min + 1)) + blueRange.min;
+
+                    const redHex = randomRed.toString(16).padStart(2, '0');
+                    const greenHex = randomGreen.toString(16).padStart(2, '0');
+                    const blueHex = randomBlue.toString(16).padStart(2, '0');
+
+                    return `#${redHex}${greenHex}${blueHex}`;
+                }
+
+                // render text
+                if (row === player1Row && col === player1Col && row === player2Row && col === player2Col) {
+                    displayedText[row][col] = `<span style="color: ${randomColor()}">${text3[Math.floor(Math.random() * text3.length)]}</span>`;// overlap
+                } else if (trailGrid[row][col] === '1') {
+                    if (!displayedText[row][col]) {
+                        displayedText[row][col] = text1[Math.floor(Math.random() * text1.length)]; // player 1
+                    }
+                } else if (trailGrid[row][col] === '2') {
+                    if (!displayedText[row][col]) {
+                        displayedText[row][col] = text2[Math.floor(Math.random() * text2.length)]; // player 2
+                    }
+                }
+                else{
+                    // display distance
+                    const maxDistance = totalRows + totalCols; // max distance
+                    const playerDistance = distance(player1Row, player1Col, player2Row, player2Col); // player distance
+
+                    // percentage of the players distance to the max possible
+                    const distancePercentage = (playerDistance / maxDistance) * 100;
+
+                    // map to number of dashes
+                    let dashedLength = Math.floor(50 * (distancePercentage / 100));
+
+                    if (distancePercentage > 0) {
+                        document.getElementById('you').innerHTML = 'you ';
+                        document.getElementById('me').innerHTML = ' me';
+                    }
+
+                    if (distancePercentage === 0) {
+                        document.getElementById('you').innerHTML = ' ';
+                        document.getElementById('me').innerHTML = ' ';
+                    }
+
+                    // update distance
+                    const distanceSpan = document.getElementById("distance");
+                    distanceSpan.innerHTML = distancePercentage === 0 ? "us" : "-".repeat(dashedLength) + " and " + "-".repeat(dashedLength);
+                }
+
+                // update the cell's inner HTML
+                cell.innerHTML = displayedText[row][col];
+
+                // highlight players
+                if (player1Row === row && player1Col === col) {
+                    cell.classList.add('player1');
+                } else if (player2Row === row && player2Col === col) {
+                    cell.classList.add('player2');
+                } else {
+                    cell.classList.remove('player1', 'player2');
+                }
+            });
+        }
+
+        // move players
+        function movePlayer(player, direction) {
+            const row = player === 'player1' ? player1Row : player2Row;
+            const col = player === 'player1' ? player1Col : player2Col;
+
+            switch (direction) {
+                case 'up':
+                    if (row > 0) {
+                        player === 'player1' ? player1Row-- : player2Row--;
+                    }
+                    break;
+                case 'down':
+                    if (row < totalRows - 1) {
+                        player === 'player1' ? player1Row++ : player2Row++;
+                    }
+                    break;
+                case 'left':
+                    if (col > 0) {
+                        player === 'player1' ? player1Col-- : player2Col--;
+                    }
+                    break;
+                case 'right':
+                    if (col < totalCols - 1) {
+                        player === 'player1' ? player1Col++ : player2Col++;
+                    }
+                    break;
+            }
+        }
+
+        // handle key press
+        function handleKeyPress(event) {
+            switch (event.key) {
+                // Player 1
+                case 'w':
+                    movePlayer('player1', 'up');
+                    break;
+                case 's':
+                    movePlayer('player1', 'down');
+                    break;
+                case 'a':
+                    movePlayer('player1', 'left');
+                    break;
+                case 'd':
+                    movePlayer('player1', 'right');
+                    break;
+                // Player 2
+                case 'ArrowUp':
+                    movePlayer('player2', 'up');
+                    break;
+                case 'ArrowDown':
+                    movePlayer('player2', 'down');
+                    break;
+                case 'ArrowLeft':
+                    movePlayer('player2', 'left');
+                    break;
+                case 'ArrowRight':
+                    movePlayer('player2', 'right');
+                    break;
+            }
+
+            updateGrid();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createGrid(); // create grid
+            updateGrid(); // update initial grid
+            document.addEventListener('keydown', handleKeyPress); // listen for key presses
+        });
+
+        refreshButton.addEventListener('click', function() {
+            location.reload();
+        });
+
+        // screenshot
+        function captureAndSave() {
+            const gameContainer = document.getElementById('game');
+
+            const scale = 5;
+
+            html2canvas(gameContainer, { scale : scale }).then(canvas => {
+                const imageData = canvas.toDataURL('image/png');
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = imageData;
+                downloadLink.download = 'what-we-grow-together.png';
+
+                downloadLink.click();
+            });
+        }
+
+        const screenshotButton = document.getElementById('screenshotButton');
+        screenshotButton.addEventListener('click', captureAndSave);
+    </script>
+</body>
+</html>
